@@ -11,7 +11,14 @@ const results=[],exceptions=[],badResponses=[];let original;
 const check=(name,condition)=>{assert.ok(condition,name);results.push(name);console.log('PASS '+name);};
 const ready=async()=>{for(let i=0;i<100;i++){if(await c.evaluate(()=>!!window.__voxel&&window.__voxel.state.renderCalls>0))return;await wait(150);}throw Error('Game initialization timed out');};
 const reload=async()=>{await c.send('Page.reload',{ignoreCache:true});await wait(400);await ready();await wait(150);};
-const click=async selector=>{const p=await c.evaluate(s=>{const el=document.querySelector(s);if(!el)throw Error('Missing '+s);el.scrollIntoView({block:'center'});const r=el.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};},selector);await c.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));await c.send('Input.dispatchMouseEvent',{type:'mouseMoved',...p});await c.send('Input.dispatchMouseEvent',{type:'mousePressed',...p,button:'left',clickCount:1});await c.send('Input.dispatchMouseEvent',{type:'mouseReleased',...p,button:'left',clickCount:1});await wait(70);};
+const click=async selector=>{
+ for(let i=0;i<30;i++){if(await c.evaluate(()=>!document.pointerLockElement))break;await wait(50);}
+ await c.evaluate(s=>document.querySelector(s).scrollIntoView({block:'center'}),selector);
+ await c.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+ const p=await c.evaluate(s=>{const el=document.querySelector(s),r=el.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};},selector);
+ await c.send('Input.dispatchMouseEvent',{type:'mouseMoved',...p});await wait(80);
+ await c.send('Input.dispatchMouseEvent',{type:'mousePressed',...p,button:'left',clickCount:1});await c.send('Input.dispatchMouseEvent',{type:'mouseReleased',...p,button:'left',clickCount:1});await wait(150);
+};
 const key=async(code,key,type)=>{if(type)await c.send('Input.dispatchKeyEvent',{type,code,key});else{await c.send('Input.dispatchKeyEvent',{type:'keyDown',code,key});await c.send('Input.dispatchKeyEvent',{type:'keyUp',code,key});}await wait(60);};
 const state=()=>c.evaluate(()=>window.__voxel.state);
 const exit=()=>c.evaluate(()=>document.getElementById('exit-btn').click());
@@ -36,7 +43,7 @@ try{
  await click('#options-btn');
  await c.evaluate(()=>{for(const[id,v]of[['fov',96],['sensitivity',22]]){const el=document.getElementById(id);el.value=v;el.dispatchEvent(new Event('input'));}for(const[id,v]of[['sound',false],['daycycle',false],['autojump',true]]){const el=document.getElementById(id);el.checked=v;el.dispatchEvent(new Event('change'));}});
  await reload();check('settings persisted',await c.evaluate(()=>document.getElementById('fov').value==='96'&&document.getElementById('sensitivity').value==='22'&&!document.getElementById('sound').checked&&!document.getElementById('daycycle').checked&&document.getElementById('autojump').checked));
- await click('#play');await key('Escape','Escape');await click('#pause-settings');
+ await click('#play');await click('#pause-btn');await click('#pause-settings');
  await c.evaluate(()=>document.getElementById('seed').focus());await key('Escape','Escape');check('Escape in text field returns to pause',await c.evaluate(()=>!document.getElementById('pause').classList.contains('hidden')&&document.getElementById('settings').classList.contains('hidden')));
  await click('#pause-settings');await c.evaluate(()=>document.getElementById('autojump').focus());await key('Tab','Tab');check('Tab from input remains in dialog',await c.evaluate(()=>document.getElementById('settings').contains(document.activeElement)));
  // Simulate a quota error only for world writes; the previous game must remain usable.
@@ -47,7 +54,7 @@ try{
  check('new world survives unload',await c.evaluate(()=>window.__voxel.world.seed==='ACCEPT-NEW-WORLD'&&JSON.parse(localStorage.getItem('voxel-wilds-v1')).seed==='ACCEPT-NEW-WORLD'));
  const imported={version:1,seed:'ACCEPT-IMPORT',edits:[],player:[14.5,35,28.5],yaw:-.18,pitch:-.6,mode:'survival',hotbar:[1,2,3,4,7,9,8,10,11],inventory:{4:3},health:15,hunger:12,food:3};
  await mkdir('.sites-runtime',{recursive:true});const file=path.resolve('.sites-runtime/acceptance-import.json');await writeFile(file,JSON.stringify(imported));
- await click('#play');await key('Escape','Escape');await click('#pause-settings');const dom=await c.send('DOM.getDocument');const node=await c.send('DOM.querySelector',{nodeId:dom.root.nodeId,selector:'#import-file'});await c.send('DOM.setFileInputFiles',{nodeId:node.nodeId,files:[file]});await wait(500);await ready();
+ await click('#play');await click('#pause-btn');await click('#pause-settings');const dom=await c.send('DOM.getDocument');const node=await c.send('DOM.querySelector',{nodeId:dom.root.nodeId,selector:'#import-file'});await c.send('DOM.setFileInputFiles',{nodeId:node.nodeId,files:[file]});await wait(500);await ready();
  check('in-game import survives unload',await c.evaluate(()=>window.__voxel.world.seed==='ACCEPT-IMPORT'));
  await fixture({mode:'survival'});await click('#play');await key('KeyE','e');await click('[data-craft="0"]');await click('[data-craft="0"]');await click('[data-craft="2"]');check('survival crafting consumes materials',(await state()).tool===1&&(await state()).inventory[7]===3);await click('#eat-apple');check('food recovery',(await state()).hunger===17);await key('Escape','Escape');
  await key('Escape','Escape');await click('#save-btn');await reload();check('tool and inventory restored',(await state()).tool===1&&(await state()).inventory[7]===3);

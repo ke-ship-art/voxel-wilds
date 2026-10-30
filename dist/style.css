@@ -130,3 +130,28 @@ header{top:calc(30px + env(safe-area-inset-top,0px));left:calc(38px + env(safe-a
  .stick-mark.north,.stick-mark.south{left:46px}.stick-mark.west,.stick-mark.east{top:44px}
  .joystick-label{top:115px}
 }
+
+/* Main thumb actions form an arc; flight tools and inventory sit apart. */
+#touch-bag{display:none}
+.action-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.action-icon span{font-size:10px;line-height:12px;letter-spacing:1px;pointer-events:none}
+@media(pointer:coarse){
+ body.playing #touch-bag{display:inline-flex;align-items:center;justify-content:center}
+ body.playing #mobile-controls{height:152px;bottom:calc(154px + env(safe-area-inset-bottom,0px))}
+ #mobile-controls .touch-actions{position:relative;display:block;width:152px;height:152px;flex:none}
+ #mobile-controls .action-icon{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin:0;border-radius:50%;color:#f1f4e6;border:1px solid #eff4dd66;background:linear-gradient(145deg,#334d3ed9,#172d25c9);box-shadow:inset 0 1px 1px #ffffff22,0 4px 14px #0003;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:none}
+ #mobile-controls .touch-actions button{position:absolute}
+ #mobile-controls .action-mine{left:0;top:42px;width:58px;height:58px}
+ #mobile-controls .action-place{right:0;top:0;width:52px;height:52px}
+ #mobile-controls .action-jump{right:0;bottom:0;width:64px;height:64px;color:#eff9d8;border-color:#d5ef9199;background:linear-gradient(145deg,#78955dd9,#405c38e6)}
+ #mobile-controls .action-jump svg{width:27px;height:27px}
+ #mobile-controls .action-icon.is-held{background:#d5ef914d;border-color:#e3fac5;box-shadow:0 0 18px #d5ef9133,inset 0 1px 5px #d5ef9122;transform:scale(.94)}
+ #mobile-controls .touch-tools{position:absolute;right:0;bottom:calc(100% + 16px);display:flex;gap:12px;pointer-events:none}
+ #mobile-controls .touch-tools button{width:44px;height:44px;background:#1b3029a6}
+ #mobile-controls #touch-fly.active{background:#d5ef9133;color:var(--accent);border-color:var(--accent)}
+ body:not(.can-fly) #mobile-controls #touch-fly,body:not(.flying) #touch-down{display:none}
+ #touch-bag{-webkit-touch-callout:none;touch-action:none}
+}
+@media(pointer:coarse) and (max-height:520px){
+ body.playing #mobile-controls{bottom:calc(90px + env(safe-area-inset-bottom,0px))}
+}
