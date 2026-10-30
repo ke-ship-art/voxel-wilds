@@ -16,19 +16,20 @@ export const BLOCKS=[null,
  {name:'钻石矿石',color:'#68b9b4',tile:16,time:2.7},
  {name:'基岩',color:'#3d4242',tile:15,time:Infinity},
  {name:'水',color:'#549fbb',tile:17,transparent:true,time:Infinity},
- {name:'工作台',color:'#947049',tiles:[18,18,19,8,18,18],time:1},
+ {name:'木制平台',color:'#947049',tiles:[18,18,19,8,18,18],time:1},
  {name:'雪块',color:'#e1e9e2',tile:20,time:.35}
 ];
 export function seedNumber(str){let h=2166136261;for(const c of String(str))h=Math.imul(h^c.charCodeAt(0),16777619);return h>>>0;}
 export class World{
- constructor(seed='WILDS-2026'){this.seed=seed;this.s=seedNumber(seed);this.data=new Uint8Array(SIZE*SIZE*HEIGHT);this.heights=new Uint8Array(SIZE*SIZE);this.edits=new Map();}
+ constructor(seed='WILDS-2026'){this.seed=seed;this.s=seedNumber(seed);this.data=new Uint8Array(SIZE*SIZE*HEIGHT);this.heights=new Uint8Array(SIZE*SIZE);this.edits=new Map();this.ready=false;}
  hash(x,z,y=0){let h=Math.imul(x,374761393)^Math.imul(z,668265263)^Math.imul(y,1274126177)^this.s;h=Math.imul(h^(h>>>13),1274126177);return((h^(h>>>16))>>>0)/4294967296;}
  noise(x,z){const ix=Math.floor(x),iz=Math.floor(z);let a=x-ix,b=z-iz;a=a*a*(3-2*a);b=b*b*(3-2*b);return (this.hash(ix,iz)*(1-a)+this.hash(ix+1,iz)*a)*(1-b)+(this.hash(ix,iz+1)*(1-a)+this.hash(ix+1,iz+1)*a)*b;}
  index(x,y,z){return y*SIZE*SIZE+(z+HALF)*SIZE+x+HALF;}
  inside(x,y,z){return x>=-HALF&&x<HALF&&z>=-HALF&&z<HALF&&y>=0&&y<HEIGHT;}
  get(x,y,z){return this.inside(x,y,z)?this.data[this.index(x,y,z)]:0;}
  solid(x,y,z){const b=this.get(x,y,z);return b!==0&&b!==16;}
- set(x,y,z,b,record=false){if(!this.inside(x,y,z))return false;const i=this.index(x,y,z);this.data[i]=b;if(record)this.edits.set(i,b);return true;}
+ set(x,y,z,b,record=false){if(!this.inside(x,y,z))return false;const i=this.index(x,y,z);this.data[i]=b;if(record)this.edits.set(i,b);if(this.ready)this.updateHeight(x,z);return true;}
+ updateHeight(x,z){if(!this.inside(x,0,z))return;let h=0;for(let y=HEIGHT-1;y>=0;y--){const b=this.data[this.index(x,y,z)];if(b&&b!==16){h=y;break;}}this.heights[(z+HALF)*SIZE+x+HALF]=h;}
  surface(x,z){x=Math.max(-HALF,Math.min(HALF-1,Math.floor(x)));z=Math.max(-HALF,Math.min(HALF-1,Math.floor(z)));return this.heights[(z+HALF)*SIZE+x+HALF];}
  generate(){
   for(let z=-HALF;z<HALF;z++)for(let x=-HALF;x<HALF;x++){
@@ -46,7 +47,7 @@ export class World{
   }
   for(let z=-HALF+4;z<HALF-4;z+=5)for(let x=-HALF+4;x<HALF-4;x+=5){
    const tx=x+Math.floor(this.hash(x,z,44)*3),tz=z+Math.floor(this.hash(x,z,55)*3),h=this.surface(tx,tz);
-   if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue;
+   if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>8&&tx<35&&tz>-13&&tz<37))continue;
    const trunk=4+Math.floor(this.hash(x,z,5)*3);
    for(let y=h+1;y<=h+trunk;y++)this.set(tx,y,tz,4);
    for(let dy=-2;dy<=1;dy++){const radius=dy===1?1:2;for(let dz=-radius;dz<=radius;dz++)for(let dx=-radius;dx<=radius;dx++){
@@ -61,9 +62,10 @@ export class World{
   }
   for(let layer=0;layer<4;layer++)for(let z=-4;z<=4;z++)for(let x=18+layer;x<=26-layer;x++)this.set(x,25+layer,z,4);
   this.set(20,21,-2,17);this.set(24,23,-2,11);
+  this.ready=true;
   return this;
  }
- applyEdits(edits){for(const pair of edits??[]){if(!Array.isArray(pair)||pair.length!==2)throw Error('存档方块格式不正确');const[i,b]=pair;if(!Number.isInteger(i)||i<0||i>=this.data.length||!Number.isInteger(b)||b<0||b>=BLOCKS.length)throw Error('存档方块数据超出范围');this.data[i]=b;this.edits.set(i,b);}}
+ applyEdits(edits){for(const pair of edits??[]){if(!Array.isArray(pair)||pair.length!==2)throw Error('存档方块格式不正确');const[i,b]=pair;if(!Number.isInteger(i)||i<0||i>=this.data.length||!Number.isInteger(b)||b<0||b>=BLOCKS.length)throw Error('存档方块数据超出范围');this.data[i]=b;this.edits.set(i,b);this.updateHeight(i%SIZE-HALF,Math.floor(i/SIZE)%SIZE-HALF);}}
 }
 export function raycast(world,origin,dir,max=7){
  let x=Math.floor(origin.x),y=Math.floor(origin.y),z=Math.floor(origin.z),dist=0,normal={x:0,y:0,z:0};
