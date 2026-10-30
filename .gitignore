@@ -1,5 +1,13 @@
 .sites-runtime/
+audit-shots/
+qa*.mjs
 qa-*.png
 qa-*.json
-qa.mjs
-qa-check.mjs
+node_modules/
+coverage/
+*.log
+*.tar.gz
+.env
+.env.*
+.DS_Store
+Thumbs.db

@@ -1,1 +1,13 @@
-{"name":"voxel-wilds","private":true,"type":"module","scripts":{"test":"node --test tests/world.test.mjs tests/joystick.test.mjs"}}
+{
+  "name": "voxel-wilds",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/world.test.mjs tests/joystick.test.mjs",
+    "start": "node serve.mjs"
+  },
+  "description": "A browser voxel sandbox with desktop and multitouch mobile controls.",
+  "engines": {
+    "node": ">=22.4.0"
+  }
+}

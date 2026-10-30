@@ -1,5 +1,5 @@
-import {ensureChrome,startChrome,CDP_URL} from '../../../chrome-cdp/chrome-cdp.mjs';
-import {connectNative} from '../../../chrome-cdp/native-cdp.mjs';
+import {ensureChrome,startChrome,CDP_URL} from './support/chrome-cdp.mjs';
+import {connectNative} from './support/native-cdp.mjs';
 import {mkdir,writeFile} from 'node:fs/promises';import {setTimeout as wait} from 'node:timers/promises';import assert from 'node:assert/strict';
 const targetUrl='http://localhost:4178/?joystick-test=20261030';
 await ensureChrome({start:()=>startChrome({url:targetUrl})});const c=await connectNative({browserURL:CDP_URL,targetUrl});let original;const errors=[],checks=[];let points=[];

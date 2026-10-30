@@ -1,5 +1,7 @@
 # 方块原野 · VOXEL WILDS —— 全面体验与缺陷评估
 
+> 仓库整理说明：旧测试截图与临时结果已清理，下文路径是历史验收记录。保留的最新展示图见 [docs/images](docs/images/)。测试脚本可重新生成验收产物。
+
 > **注：本文件是修复前的评估快照。** 文中列出的 P0/P1/P2 问题已在 [修复说明.md](修复说明.md) 中逐项修复并回归验证；修复后的截图见 `audit-shots/after-*.png`。
 
 > 评估对象：`sites/voxel-wilds-20261030`（commit 70912cc + 未提交的 launcher）
@@ -53,7 +55,6 @@ documentElement    : scrollHeight 390 === clientHeight 390   ← 没有任何滚
 
 **建议**：把菜单改成"可在 `#menu` 内滚动"的 flex 布局（`.screen{overflow-y:auto}` + `margin:auto`），或至少加 `@media(max-height:520px)` 的紧凑布局（隐藏 intro/scene-caption、缩小标题、减间距）。这是上线前必须清零的问题。
 
-![横屏菜单：开始按钮在视口外](audit-shots/07-menu-landscape-unreachable.png)
 
 ---
 
@@ -139,7 +140,6 @@ catch{saveAvailable=false;$('save-status').textContent='存储不可用';
 
 **建议**：`@media(pointer:coarse)` 下把 caption 换成触屏文案；补一个"飞行"切换按钮和"下降"按钮（长按 Shift 等价物）；或干脆在触屏下默认不进入飞行。
 
-![移动端实际控制层：toast 压住「挖掘」和方向键](audit-shots/09-mobile-play-controls-toast.png)
 
 ---
 
@@ -178,7 +178,6 @@ toast  : [x 639, y 663.5, w 162, h 43.5]
 
 **建议**：toast 的 z-index 放到模态之下，或在 `body.menu-open` / 模态打开时 `display:none`；移动端把 toast 锚定到 HUD 上方（并确保不与 `#mobile-controls` 相交）。
 
-![设置面板：toast 正好盖住"生成新世界"](audit-shots/05-settings-toast-overlap.png)
 
 ---
 
@@ -268,7 +267,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 
 **建议**：保护区按**树冠足迹**（±2）而不是树干判定；初始 yaw 指向小屋/山谷；或在出生点周围 3 格内强制清空树叶。
 
-![进入游戏的第一帧：左半屏被树叶占满，右下角是被裁掉的手持方块](audit-shots/02-play-desktop.png)
 
 ---
 
@@ -311,7 +309,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 
 **建议**：把 `handCube` 缩到 0.10–0.13、`z≈-0.45`，整体略微上移，并让底部完整落在视口内；FOV 变化时用固定视角模型（单独一层相机）来避免比例漂移。
 
-![右下角的手持方块](audit-shots/14-hotbar-closeup.png)
 
 ### P2-2 准星在亮背景下几乎不可见 [实测]
 
@@ -319,7 +316,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 
 **建议**：去掉 `screen` 混合，改成"深色描边 + 浅色填充"（例如两层 `box-shadow` 或 `filter: drop-shadow`），或使用 `mix-blend-mode:difference`。
 
-![飞行视角：中央准星几乎消失](audit-shots/15-flying-view.png)
 
 ### P2-3 背包弹窗出现浏览器默认滚动条 [实测]
 
@@ -327,7 +323,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 
 **建议**：`scrollbar-width:thin; scrollbar-color:…` + `::-webkit-scrollbar` 自定义；内容刚好放得下时不要出现滚动条（减少 `max-height` 或内边距）。
 
-![背包面板右侧的系统滚动条](audit-shots/03-inventory-desktop.png)
 
 ### P2-4 大量 9–10px 中文文本，可读性与对比度不足 [实测 + CSS]
 
@@ -352,7 +347,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 
 **建议**：`#hud` 加 `max-width:calc(100vw - 24px)`，槽位用 `flex:1 1 0` + `min-width:0`，或在 ≤360px 时改为 2 行/滚动；生存行在窄屏改为两行（血量一行、饱食一行、模式标签单独一行）。
 
-![320px：hotbar 被裁、心形与模式标签重叠](audit-shots/11-mobile-320-hud-overflow.png)
 
 ### P2-6 横屏游戏中：准星、目标名、提示、模式标签、方块名挤在中线 [实测]
 
@@ -370,7 +364,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 
 **建议**：为矮视口（`max-height:480px`）单独做一套紧凑 HUD：隐藏 `#hint`、把模式标签并入 hotbar、缩小热键栏、toast 移到最上方。
 
-![横屏游戏：中央文字重叠，toast 压住准星](audit-shots/08-play-landscape-clutter.png)
 
 ### P2-7 触控目标偏小 [实测]
 
@@ -400,7 +393,6 @@ if(this.hash(x,z,77)<.44||h<=SEA+1||h>32||(tx>11&&tx<32&&tz>-10&&tz<34))continue
 - **滑块**：`accent-color` 只改了滑块/勾选，未填充的轨道仍是默认灰粉色，与整体绿灰色系不搭；且没有"重置为默认"。
 - **`#world-badge` 文案**："随机地形"其实是固定种子确定性生成（同种子必得同地形），文案与实现不符。
 
-![夜晚效果（加分项）：星空、暗部过渡自然](audit-shots/13-night.png)
 
 ---
 
