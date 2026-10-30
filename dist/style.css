@@ -111,3 +111,22 @@ header{top:calc(30px + env(safe-area-inset-top,0px));left:calc(38px + env(safe-a
 @media(pointer:coarse) and (max-height:520px){
  #navigation,#world-info{display:none}
 }
+
+/* Analog movement, with independent pointers for look and action buttons. */
+.joystick-wrap{width:120px;position:relative;align-self:center;pointer-events:none;user-select:none;-webkit-user-select:none}
+#joystick{position:relative;width:120px;height:120px;border:1px solid #e3f1d768;border-radius:50%;background:radial-gradient(circle,#d5ef9108 32%,#192f2877 34%,#192f2855 68%,#d5ef9122 70%);box-shadow:inset 0 0 20px #0c241d33,0 3px 16px #0002;pointer-events:auto;touch-action:none}
+#joystick.active{border-color:#d5ef91bb;background-color:#d5ef9110}
+#joystick-knob{position:absolute;width:52px;height:52px;top:33px;left:33px;border-radius:50%;border:1px solid #e1f2c9a6;background:radial-gradient(circle at 35% 30%,#bfd996b3,#64825aa6);box-shadow:0 3px 12px #0004,inset 0 1px 2px #ffffff40;pointer-events:none;will-change:transform}
+.stick-mark{position:absolute;color:#edf4df9c;font-size:18px;line-height:16px;pointer-events:none}
+.stick-mark.north{top:4px;left:52px}.stick-mark.south{bottom:6px;left:52px}.stick-mark.west{left:7px;top:50px}.stick-mark.east{right:7px;top:50px}
+.joystick-label{position:absolute;width:100%;text-align:center;top:127px;left:0;font-size:10px;letter-spacing:1px;color:#edf4dfb3;text-shadow:0 1px 4px #000;pointer-events:none}
+@media(pointer:coarse){
+ body.playing #mobile-controls{align-items:center;left:calc(20px + env(safe-area-inset-left,0px));right:calc(20px + env(safe-area-inset-right,0px))}
+}
+@media(pointer:coarse) and (max-width:350px){
+ body.playing #mobile-controls{left:12px;right:12px}
+ .joystick-wrap,#joystick{width:108px;height:108px}
+ #joystick-knob{top:27px;left:27px}
+ .stick-mark.north,.stick-mark.south{left:46px}.stick-mark.west,.stick-mark.east{top:44px}
+ .joystick-label{top:115px}
+}

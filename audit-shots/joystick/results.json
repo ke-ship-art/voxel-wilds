@@ -1,0 +1,22 @@
+{
+  "checks": [
+    "touch flight enabled",
+    "center deadzone keeps player still",
+    "push strength changes speed",
+    "release stops movement",
+    "release recenters knob",
+    "diagonal movement changes both axes",
+    "second finger looks while walking",
+    "releasing look finger keeps joystick moving",
+    "third control can ascend while walking",
+    "releasing jump keeps movement",
+    "releasing joystick stops only movement",
+    "touch cancel stops movement",
+    "pause resets joystick",
+    "joystick layout fits 320x568",
+    "joystick layout fits 390x844",
+    "joystick layout fits 844x390",
+    "no runtime exceptions"
+  ],
+  "errors": []
+}
