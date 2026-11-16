@@ -3,11 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/world.test.mjs tests/joystick.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "start": "node serve.mjs"
   },
   "description": "A browser voxel sandbox with desktop and multitouch mobile controls.",
   "engines": {
     "node": ">=22.4.0"
-  }
+  },
+  "license": "MIT"
 }

@@ -51,3 +51,8 @@
 ![手机横屏操作](docs/images/landscape.png)
 
 修复过程及历史验收结论保留在根目录各份中文报告中。最新源码的静态资源位于 `dist/`；`.openai/hosting.json` 保留现有 Sites 站点绑定，不包含凭据。
+
+
+## 本轮修复
+
+详见 [FIXES.md](FIXES.md)，包含数据保护、运行边界及验证说明。

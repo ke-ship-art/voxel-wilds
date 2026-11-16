@@ -65,7 +65,8 @@ export class World{
   this.ready=true;
   return this;
  }
- applyEdits(edits){for(const pair of edits??[]){if(!Array.isArray(pair)||pair.length!==2)throw Error('存档方块格式不正确');const[i,b]=pair;if(!Number.isInteger(i)||i<0||i>=this.data.length||!Number.isInteger(b)||b<0||b>=BLOCKS.length)throw Error('存档方块数据超出范围');this.data[i]=b;this.edits.set(i,b);this.updateHeight(i%SIZE-HALF,Math.floor(i/SIZE)%SIZE-HALF);}}
+ applyEdits(edits){const checked=new Map(),columns=new Set();for(const pair of edits??[]){if(!Array.isArray(pair)||pair.length!==2)throw Error('存档方块格式不正确');const[i,b]=pair;if(!Number.isInteger(i)||i<0||i>=this.data.length||!Number.isInteger(b)||b<0||b>=BLOCKS.length)throw Error('存档方块数据超出范围');checked.set(i,b);}for(const[i,b]of checked){this.data[i]=b;this.edits.set(i,b);columns.add(i%(SIZE*SIZE));}for(const i of columns)this.updateHeight(i%SIZE-HALF,Math.floor(i/SIZE)-HALF);}
+
 }
 export function raycast(world,origin,dir,max=7){
  let x=Math.floor(origin.x),y=Math.floor(origin.y),z=Math.floor(origin.z),dist=0,normal={x:0,y:0,z:0};
